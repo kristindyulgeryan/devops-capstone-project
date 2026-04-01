@@ -153,3 +153,21 @@ class TestAccountService(TestCase):
         """It should not allow invalid methods"""
         resp = self.client.put(BASE_URL) 
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    def test_update_account(self):
+        """It should Update an existing Account"""
+        test_account = AccountFactory()
+        resp = self.client.post(BASE_URL, json=test_account.serialize())
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        
+        new_account = resp.get_json()
+        new_account["name"] = "Updated Name"
+        
+        
+        resp = self.client.put(f"{BASE_URL}/{new_account['id']}", json=new_account)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+       
+        updated_account = resp.get_json()
+        self.assertEqual(updated_account["name"], "Updated Name")
